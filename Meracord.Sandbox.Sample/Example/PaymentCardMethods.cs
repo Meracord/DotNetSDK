@@ -88,8 +88,8 @@ namespace Meracord.Sandbox.Example
                     return activeProfile;
                 }
 
-                Console.WriteLine("PaymentCard profile not active.  Retry in 2 seconds...");
-                System.Threading.Thread.Sleep(2000); // wait 2 seconds
+                Console.WriteLine("PaymentCard profile not active.  Retry in 5 seconds...");
+                System.Threading.Thread.Sleep(5000); // wait 5 seconds
                 tries--;
             }
 

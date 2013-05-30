@@ -86,7 +86,7 @@ namespace Meracord.Sandbox.Example
         private static void AccountEdit(Account transportAccount)
         {
             //Modify the First name
-            transportAccount.NameFirst = transportAccount.NameFirst + ".";
+            transportAccount.Individual.NameFirst = transportAccount.Individual.NameFirst + ".";
 
             Helper.ShowResults("Account.Edit()",
                 _session.Account.Edit(transportAccount)
@@ -122,7 +122,7 @@ namespace Meracord.Sandbox.Example
         public static Account GetTransportAccount(string groupNumber, string newClientId)
         {
             return AccountFactory.Create(
-                groupNumber, newClientId, 0, 3, "999-99-1234", "Calvin", "Consumer", null, 
+                groupNumber, newClientId, null, "999-99-1234", "Calvin", "Consumer", null, 
                 "1001 Pacific Ave, Ste 300", "Tacoma", "WA", "98092", 
                 "calvinconsumer@Meracord.com", "999-999-9999"
                 );
