@@ -2,10 +2,10 @@
 using System.Linq;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
-using NoteWorld.DataServices.Common.Enumeration;
-using NoteWorld.DataServices.Common.Factories;
-using NoteWorld.DataServices.Common.Transport;
+using Meracord.API;
+using Meracord.API.Common.Enumeration;
+using Meracord.API.Common.Factories;
+using Meracord.API.Common.Transport;
 
 namespace Meracord.Sandbox.Example
 {
@@ -19,7 +19,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string clientId, BankProfile bankProfile)
+        public static void Perform(string customerId, BankProfile bankProfile)
         {
             try
             {
@@ -29,13 +29,13 @@ namespace Meracord.Sandbox.Example
 
                 FindNextValidDebitDate();
 
-                CreateNewDebit(groupNumber, clientId, bankProfile);
+                CreateNewDebit(groupNumber, customerId, bankProfile);
 
-                CreateDebitWithDefaultBankProfile(groupNumber, clientId);
+                CreateDebitWithDefaultBankProfile(groupNumber, customerId);
 
-                FindByStatus(groupNumber, clientId);
+                FindByStatus(groupNumber, customerId);
 
-                CancelAllDebit(groupNumber, clientId);
+                CancelAllDebit(groupNumber, customerId);
 
             }
             catch (Exception ex)
@@ -55,10 +55,10 @@ namespace Meracord.Sandbox.Example
         ///   The PaymentProfile should only be omitted if your company's business model does not allow you to maintain banking information for your client, and your client creates their own bank profile.
         ///   </para>
         /// </remarks>
-        private static void CreateDebitWithDefaultBankProfile(string groupNumber, string clientId)
+        private static void CreateDebitWithDefaultBankProfile(string groupNumber, string customerId)
         {
             // Build debit transport object to send to web service
-            var debit = GetTransportDebit(groupNumber, clientId, null);
+            var debit = GetTransportDebit(groupNumber, customerId, null);
             // Remove PaymentProfile used by other test method. 
             debit.PaymentProfile = null;
 
@@ -71,10 +71,10 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Debit.Create() method
         /// </summary>
-        private static void CreateNewDebit(string groupNumber, string clientId, BankProfile bankProfile)
+        private static void CreateNewDebit(string groupNumber, string customerId, BankProfile bankProfile)
         {
             // Build debit transport object to send to web service
-            var debit = GetTransportDebit(groupNumber, clientId, bankProfile);
+            var debit = GetTransportDebit(groupNumber, customerId, bankProfile);
 
             // Call Debit WebService Create Method
             var debitResult = _session.Debit.Create(debit);
@@ -95,30 +95,30 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Debit.CancelAll() method
         /// </summary>
-        private static void CancelAllDebit(string groupNumber, string clientId)
+        private static void CancelAllDebit(string groupNumber, string customerId)
         {
             // Call Debit WebService CancelAll Method
-            var debitResult = _session.Debit.CancelAll(groupNumber, clientId);
+            var debitResult = _session.Debit.CancelAll(groupNumber, customerId);
             Helper.ShowResults("Debit.CancelAll()", debitResult);
         }
 
         /// <summary>
         /// Execute Debit.FindByStatus() method
         /// </summary>
-        private static void FindByStatus(string groupNumber, string clientId)
+        private static void FindByStatus(string groupNumber, string customerId)
         {
             // Call Debit WebService CancelAll Method
-            var debitResult = _session.Debit.FindByStatus(groupNumber, clientId, (int)DebitState.Pending);
+            var debitResult = _session.Debit.FindByStatus(groupNumber, customerId, (int)DebitState.Pending);
             Helper.ShowResults("Debit.FindByStatus()", debitResult);
         }
 
         /// <summary>
         /// Helper method to generate Debit object
         /// </summary>
-        private static Debit GetTransportDebit(string groupNumber, string clientId, BankProfile bankProfile)
+        private static Debit GetTransportDebit(string groupNumber, string customerId, BankProfile bankProfile)
         {
             // Service Provider's Debit Identifier (Debit PrimaryKey)
-            int clientDebitId = 353476; 
+            string debitReferenceId = "353476"; 
 
             // The date to pull funds from consumers account
             DateTime debitDate = DateTime.Today.AddDays(5);
@@ -145,7 +145,7 @@ namespace Meracord.Sandbox.Example
                 );
 
             // Call DebitFactory Create Method, and return Transport.Debit Instance
-            return DebitFactory.Create(groupNumber, clientId, clientDebitId, debitDate, bankProfile, debitAmount, allocList);
+            return DebitFactory.Create(groupNumber, customerId, debitReferenceId, debitDate, bankProfile, debitAmount, allocList);
             
         }
 

@@ -54,17 +54,20 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NoteWorld.DataServices, Culture=neutral, PublicKeyToken=bcdd198a749e0a71, processorArchitecture=MSIL">
-      <HintPath>SDK\NoteWorld.DataServices.dll</HintPath>
+    <Reference Include="Meracord.API, Version=13144.78.4.16880, Culture=neutral, PublicKeyToken=bcdd198a749e0a71, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SDK\Meracord.API.dll</HintPath>
     </Reference>
-    <Reference Include="NoteWorld.DataServices.Common, Culture=neutral, PublicKeyToken=bcdd198a749e0a71, processorArchitecture=MSIL">
-      <HintPath>SDK\NoteWorld.DataServices.Common.dll</HintPath>
+    <Reference Include="Meracord.API.Common, Version=13144.78.4.16880, Culture=neutral, PublicKeyToken=bcdd198a749e0a71, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SDK\Meracord.API.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Services.Client">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -87,6 +90,7 @@
     <Compile Include="Custom\MyAccount.cs" />
     <Compile Include="Example\AccountMethods.cs" />
     <Compile Include="Example\BankProfileMethods.cs" />
+    <Compile Include="Example\PayeeMethods.cs" />
     <Compile Include="Example\CreditorMethods.cs" />
     <Compile Include="Example\DebitMethods.cs" />
     <Compile Include="Example\PaymentCardMethods.cs" />
@@ -127,8 +131,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="SDK\NoteWorld.DataServices.Common.dll" />
-    <Content Include="SDK\NoteWorld.DataServices.dll" />
+    <Content Include="SDK\Meracord.API.Common.dll" />
+    <Content Include="SDK\Meracord.API.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

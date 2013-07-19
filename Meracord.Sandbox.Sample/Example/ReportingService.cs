@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
-using NoteWorld.DataServices.Reporting;
+using Meracord.API;
+using Meracord.API.Reporting;
 using Meracord.Sandbox.Custom;
 
 namespace Meracord.Sandbox.Example
@@ -17,7 +17,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string clientId)
+        public static void Perform(string customerId)
         {
             try
             {
@@ -34,15 +34,15 @@ namespace Meracord.Sandbox.Example
                     );
 
                 Helper.ShowResults("AccountStatus Query",
-                    FindAccountStatus(groupNumber, clientId)
+                    FindAccountStatus(groupNumber, customerId)
                     );
 
                 Helper.ShowResults("DebitSummary Query",
-                    FindRecentProcessedDebits(groupNumber, clientId)
+                    FindRecentProcessedDebits(groupNumber, customerId)
                     );
 
                 Helper.ShowResults("Transaction History Query By Account",
-                    AccountTransactionHistory(groupNumber, clientId)
+                    AccountTransactionHistory(groupNumber, customerId)
                     );
 
                 Helper.ShowResults("Custom Account Projection",
@@ -112,14 +112,14 @@ namespace Meracord.Sandbox.Example
         }
 
         /// <summary>
-        /// Query the DataContext.AccountStatus filtering by ControlGroup and clientId
+        /// Query the DataContext.AccountStatus filtering by ControlGroup and customerId
         /// </summary>
-        private static AccountStatus[] FindAccountStatus(string groupNumber, string clientId)
+        private static AccountStatus[] FindAccountStatus(string groupNumber, string customerId)
         {
             IQueryable<AccountStatus> qryAccountStatus =
                 from p in _session.DataContext.AccountStatus
                 where p.GroupNumber == groupNumber
-                where p.ClientID == clientId
+                where p.CustomerID == customerId
                 select p;
 
             return qryAccountStatus.ToArray();
@@ -141,16 +141,16 @@ namespace Meracord.Sandbox.Example
         }
 
         /// <summary>
-        /// Query the DataContext.DebitSummary filtering by ControlGroup and clientId
+        /// Query the DataContext.DebitSummary filtering by ControlGroup and customerId
         /// </summary>
-        private static DebitSummary[] FindRecentProcessedDebits(string groupNumber, string clientId)
+        private static DebitSummary[] FindRecentProcessedDebits(string groupNumber, string customerId)
         {
-            const int debitStatus = (int)NoteWorld.DataServices.Common.Enumeration.DebitStatus.PaymentProcessed;
+            const int debitStatus = (int)Meracord.API.Common.Enumeration.DebitStatus.PaymentProcessed;
 
             IQueryable<DebitSummary> qryDebitSummary =
                 from p in _session.DataContext.DebitSummary
                 where p.GroupNumber == groupNumber
-                where p.ClientID == clientId
+                where p.CustomerID == customerId
                 where p.DebitStatusId == debitStatus
                 select p;
 
@@ -160,9 +160,9 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Query the DataContext.TransactionHistory filtering by AccountNumber
         /// </summary>
-        private static TransactionHistory[] AccountTransactionHistory(string groupNumber, string clientId)
+        private static TransactionHistory[] AccountTransactionHistory(string groupNumber, string customerId)
         {
-            var accountNumber = GetAccountNumberFor(groupNumber, clientId);
+            var accountNumber = GetAccountNumberFor(groupNumber, customerId);
 
             IQueryable<TransactionHistory> qryTransactionHistory =
                 from p in _session.DataContext.TransactionHistory
@@ -174,14 +174,14 @@ namespace Meracord.Sandbox.Example
         }
 
         /// <summary>
-        /// Query the DataContext.AccountDetails to get the AccountNumber for groupNumber/clientId
+        /// Query the DataContext.AccountDetails to get the AccountNumber for groupNumber/customerId
         /// </summary>
-        private static string GetAccountNumberFor(string groupNumber, string clientId)
+        private static string GetAccountNumberFor(string groupNumber, string customerId)
         {
             var qryAccount =
                 from p in _session.DataContext.AccountDetails
                 where p.GroupNumber == groupNumber
-                where p.ClientID == clientId
+                where p.CustomerID == customerId
                 select new { accountNumber = p.AccountNumber };
 
             return qryAccount.FirstOrDefault().accountNumber;

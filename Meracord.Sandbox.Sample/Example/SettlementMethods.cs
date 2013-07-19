@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
-using NoteWorld.DataServices.Common.Enumeration;
-using NoteWorld.DataServices.Common.Factories;
-using NoteWorld.DataServices.Common.Transport;
+using Meracord.API;
+using Meracord.API.Common.Enumeration;
+using Meracord.API.Common.Factories;
+using Meracord.API.Common.Transport;
 
 namespace Meracord.Sandbox.Example
 {
@@ -19,7 +19,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string clientId)
+        public static void Perform(string customerId)
         {
             try
             {
@@ -29,20 +29,20 @@ namespace Meracord.Sandbox.Example
 
                 var creditorId = FindCreditor();
 
-                var contract = GetSettlementContract(clientId, creditorId, documentPath);
+                var contract = GetSettlementContract(customerId, creditorId, documentPath);
 
                 // Execute Settlement.Create() method
                 Helper.ShowResults("Settlement.Create()", 
                     _session.Settlement.Create(contract)
                     );
 
-                var agreement = FindActiveSettlementAgreement(clientId);
+                var agreement = FindActiveSettlementAgreement(customerId);
                 
                 if (agreement != null)
                 {
                     // Execute Settlement.Cancel() method
                     Helper.ShowResults("Settlement.Cancel()",
-                        _session.Settlement.Cancel(agreement.GroupNumber, agreement.ClientId, agreement.AgreementId)
+                        _session.Settlement.Cancel(agreement.GroupNumber, agreement.CustomerId, agreement.AgreementId)
                         );
                 }
 
@@ -56,19 +56,19 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Settlement.Find() method
         /// </summary>
-        private static SettlementAgreementReference FindActiveSettlementAgreement(string clientId)
+        private static SettlementAgreementReference FindActiveSettlementAgreement(string customerId)
         {
             // Build parameter list
             var groupNumber = Settings.GroupNumber;
             const AgreementState agreementState = AgreementState.Active;
 
             // Find all active settlement agreements for this consumer
-            var activeAgreements = _session.Settlement.Find(groupNumber, clientId, agreementState);
+            var activeAgreements = _session.Settlement.Find(groupNumber, customerId, agreementState);
 
             // Verify we have an active agreement
             if (activeAgreements.Length == 0)
             {
-                Helper.ShowResults("Settlement.Find()", string.Format("Unable to locate active settlement contract for Group:{0}, ClientId:{1}", groupNumber, clientId));
+                Helper.ShowResults("Settlement.Find()", string.Format("Unable to locate active settlement contract for Group:{0}, CustomerId:{1}", groupNumber, customerId));
                 return null;
             }
 
@@ -83,7 +83,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to build SettlementAgreement object
         /// </summary>
-        private static SettlementAgreement GetSettlementContract(string clientId, string creditorId, string documentPath)
+        private static SettlementAgreement GetSettlementContract(string customerId, string creditorId, string documentPath)
         {
             var groupNumber = Settings.GroupNumber;
             const string clientName = "Billy Bob";
@@ -106,7 +106,7 @@ namespace Meracord.Sandbox.Example
             var document = DocumentFactory.Create(documentPath, DocumentType.SettlementAgreement);
 
             return SettlementFactory.Create(
-                groupNumber, clientId, clientName, clientForBenefitName, payToTheOrderOf, 
+                groupNumber, customerId, clientName, clientForBenefitName, payToTheOrderOf, 
                 approvalRule, deliveryMethod, agencyTrackingNumber,
                 creditorId, creditorTrackingNumber1, creditorTrackingNumber2,
                 creditorAttentionName, comment, settlementFeeAmount, disbursements, document

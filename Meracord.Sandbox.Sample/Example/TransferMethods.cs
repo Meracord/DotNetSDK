@@ -1,7 +1,7 @@
 ﻿using System;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
+using Meracord.API;
 using System.Linq;
 
 namespace Meracord.Sandbox.Example
@@ -16,7 +16,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string clientId)
+        public static void Perform(string customerId)
         {
             try
             {
@@ -24,12 +24,12 @@ namespace Meracord.Sandbox.Example
 
                 _session = SessionFactory.Create();
 
-                var consumerAccountNumber = FindAccount(groupNumber, clientId);
+                var consumerAccountNumber = FindAccount(groupNumber, customerId);
 
                 var sourceAccountNumber = GetAdministrativeAccount();
 
                 // Identifying accounts for tranfers is different than most API calls.
-                // The source or destination account may be of a type that cannot be identified by a ClientID.
+                // The source or destination account may be of a type that cannot be identified by a CustomerId.
                 // So we use the Meracord account number for transfers.
                 CreateTransfer(sourceAccountNumber, consumerAccountNumber);
 
@@ -43,9 +43,9 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Account.Find() method
         /// </summary>
-        private static string FindAccount(string groupNumber, string clientId)
+        private static string FindAccount(string groupNumber, string customerId)
         {
-            var result = _session.Account.Find(groupNumber, clientId);
+            var result = _session.Account.Find(groupNumber, customerId);
 
             Helper.ShowResults("Account.Find()", result);
 

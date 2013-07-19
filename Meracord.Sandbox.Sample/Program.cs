@@ -1,27 +1,28 @@
 ﻿using System;
+using Meracord.API.Common.Transport;
 using Meracord.Sandbox.Example;
-using NoteWorld.DataServices.Common.Transport;
 
 namespace Meracord.Sandbox
 {
     internal class Program
     {
-        private static string ClientId { get; set; }
+        private static string CustomerId { get; set; }
         private static BankProfile BankProfile { get; set; }
 
         static void Main(string[] args)
         {
-            // Save a reference to the account just created
-            ClientId = AccountMethods.Perform();
+            //Save a reference to the account just created
+            CustomerId = AccountMethods.Perform();
             // Save a reference to the BankProfile just created
-            BankProfile = BankProfileMethods.Perform(ClientId);
+            BankProfile = BankProfileMethods.Perform(CustomerId);
 
-            DebitMethods.Perform(ClientId, BankProfile);
-            PaymentCardMethods.Perform(ClientId);
-            SettlementMethods.Perform(ClientId);
-            TransferMethods.Perform(ClientId);
+            DebitMethods.Perform(CustomerId, BankProfile);
+            PaymentCardMethods.Perform(CustomerId);
+            SettlementMethods.Perform(CustomerId);
+            TransferMethods.Perform(CustomerId);
             CreditorMethods.Perform();
-            ReportingService.Perform(ClientId);
+            PayeeMethods.Perform();
+            ReportingService.Perform(CustomerId);
             Console.WriteLine("Done");
             Console.ReadKey();
         }

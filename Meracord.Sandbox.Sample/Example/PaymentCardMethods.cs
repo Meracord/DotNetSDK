@@ -1,10 +1,10 @@
 ﻿using System;
+using Meracord.API;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
-using NoteWorld.DataServices.Common.Factories;
-using Transport = NoteWorld.DataServices.Common.Transport;
-using NoteWorld.DataServices.Common.Enumeration;
+using Meracord.API.Common.Enumeration;
+using Meracord.API.Common.Factories;
+using Meracord.API.Common.Transport;
 using System.Linq;
 
 namespace Meracord.Sandbox.Example
@@ -17,7 +17,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string clientId)
+        public static void Perform(string customerId)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Meracord.Sandbox.Example
                 var paymentCard = GetPaymentCard();
 
                 // Build a CardPaymentSchedule object
-                var schedule = GetCardPaymentSchedule(groupNumber, clientId, paymentCard);
+                var schedule = GetCardPaymentSchedule(groupNumber, customerId, paymentCard);
 
                 // Call API method to create card payment schedule
                 CreateSchedule(session, schedule);
@@ -41,10 +41,10 @@ namespace Meracord.Sandbox.Example
                 // The card returned will be the one created in CreateSchedule call above.
                 // Note that activating a card profile is an asynchronise process dependant on processes outside of Meracord,
                 // so we may have to wait a little bit before it is activated.
-                var cardProfile = FindForAccount(session, groupNumber, clientId);
+                var cardProfile = FindForAccount(session, groupNumber, customerId);
 
                 // Call API method to create card payment schedule uaing an existing card profile
-                CreateScheduleWithToken(session, groupNumber, clientId, cardProfile);
+                CreateScheduleWithToken(session, groupNumber, customerId, cardProfile);
 
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace Meracord.Sandbox.Example
             }
         }
 
-        private static void CreateSchedule(DataSession session, Transport.CardPaymentSchedule schedule)
+        private static void CreateSchedule(DataSession session, CardPaymentSchedule schedule)
         {
             // Test CardPaymentSchedule to see if it is valid
             schedule.Validate();
@@ -62,10 +62,10 @@ namespace Meracord.Sandbox.Example
             Helper.ShowResults("PaymentCard.CreateSchedule()", session.PaymentCard.CreateSchedule(schedule));
         }
 
-        private static void CreateScheduleWithToken(DataSession session, string groupNumber, string clientId, Transport.PaymentCardProfileReference profile)
+        private static void CreateScheduleWithToken(DataSession session, string groupNumber, string customerId, PaymentCardProfileReference profile)
         {
             var paymentCardToken = profile.PaymentCardToken;
-            var schedule = GetCardPaymentScheduleWithExistingProfile(groupNumber, clientId, paymentCardToken);
+            var schedule = GetCardPaymentScheduleWithExistingProfile(groupNumber, customerId, paymentCardToken);
 
             // Test CardPaymentSchedule to see if it is valid
             schedule.Validate();
@@ -74,12 +74,12 @@ namespace Meracord.Sandbox.Example
             Helper.ShowResults("PaymentCard.CreateScheduleWithToken()", session.PaymentCard.CreateScheduleWithToken(schedule));
         }
 
-        private static Transport.PaymentCardProfileReference FindForAccount(DataSession session, string groupNumber, string clientId)
+        private static PaymentCardProfileReference FindForAccount(DataSession session, string groupNumber, string customerId)
         {
             var tries = 4;
             while (tries > 0)
             {
-                var paymentCardProfiles = session.PaymentCard.FindForAccount(groupNumber, clientId);
+                var paymentCardProfiles = session.PaymentCard.FindForAccount(groupNumber, customerId);
                 var activeProfile = paymentCardProfiles.ToList().FirstOrDefault(x => x.IsActive);
 
                 if (activeProfile != null)
@@ -96,7 +96,7 @@ namespace Meracord.Sandbox.Example
             throw new ApplicationException("Timeout reached waiting for PaymentCard profile to become active. It is possible the profile will never be activated do to processing constraints.");
         }
 
-        private static void PaymentCardValidate(Transport.CardPaymentSchedule schedule)
+        private static void PaymentCardValidate(CardPaymentSchedule schedule)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to create a document object
         /// </summary>
-        private static Transport.Document GetDocument()
+        private static Document GetDocument()
         {
             var documentPath = Settings.DocumentPath;
             return DocumentFactory.Create(documentPath, DocumentType.PaymentCardAuthorization);
@@ -125,7 +125,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to create a PaymentCard object
         /// </summary>
-        private static Transport.PaymentCard GetPaymentCard()
+        private static PaymentCard GetPaymentCard()
         {
             PaymentCardMethod cardMethod = PaymentCardMethod.CreditCard;
             PaymentCardType cardType = PaymentCardType.Visa;
@@ -151,7 +151,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to create a CardPaymentSchedule object
         /// </summary>
-        private static Transport.CardPaymentSchedule GetCardPaymentSchedule(string groupNumber, string clientId, Transport.PaymentCard paymentCard)
+        private static CardPaymentSchedule GetCardPaymentSchedule(string groupNumber, string customerId, PaymentCard paymentCard)
         {
             var paymentFrequency = PaymentFrequency.Monthly;
             var paymentCount = 2;
@@ -163,12 +163,12 @@ namespace Meracord.Sandbox.Example
 
             allocations.Add(
                 DebitFactory.CreateAllocation(
-                    Transport.AssignmentCode.AccountReserves, paymentAmount
+                    AssignmentCode.AccountReserves, paymentAmount
                     )
                 );
 
             var schedule = PaymentCardFactory.CreateSchedule(
-                groupNumber, clientId, paymentCard,
+                groupNumber, customerId, paymentCard,
                 firstPaymentDate, paymentCount, paymentFrequency,
                 paymentAmount, agreement, allocations
                 );
@@ -179,7 +179,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to create a CardPaymentScheduleWithExistingProfile object
         /// </summary>
-        private static Transport.CardPaymentScheduleWithToken GetCardPaymentScheduleWithExistingProfile(string groupNumber, string clientId, Guid paymentCardToken)
+        private static CardPaymentScheduleWithToken GetCardPaymentScheduleWithExistingProfile(string groupNumber, string customerId, Guid paymentCardToken)
         {
             const PaymentFrequency paymentFrequency = PaymentFrequency.Monthly;
             const int paymentCount = 2;
@@ -190,12 +190,12 @@ namespace Meracord.Sandbox.Example
 
             allocations.Add(
                 DebitFactory.CreateAllocation(
-                    Transport.AssignmentCode.AccountReserves, paymentAmount
+                    AssignmentCode.AccountReserves, paymentAmount
                     )
                 );
 
             var schedule = PaymentCardFactory.CreateSchedule(
-                groupNumber, clientId, paymentCardToken,
+                groupNumber, customerId, paymentCardToken,
                 firstPaymentDate, paymentCount, paymentFrequency,
                 paymentAmount, allocations
                 );

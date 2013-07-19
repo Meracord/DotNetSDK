@@ -1,9 +1,9 @@
 ﻿using System;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices.Common.Factories;
-using Transport = NoteWorld.DataServices.Common.Transport;
-using NoteWorld.DataServices.Common.Enumeration;
+using Meracord.API.Common.Enumeration;
+using Meracord.API.Common.Factories;
+using Meracord.API.Common.Transport;
 
 namespace Meracord.Sandbox.Example
 {
@@ -15,7 +15,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static Transport.BankProfile Perform(string clientId)
+        public static BankProfile Perform(string customerId)
         {
             try
             {
@@ -27,10 +27,10 @@ namespace Meracord.Sandbox.Example
                 var session = SessionFactory.Create();
 
                 // Call BankProfile.Create()
-                Helper.ShowResults("BankProfile.Create()", session.BankProfile.Create(groupNumber, clientId, bankProfile, document));
+                Helper.ShowResults("BankProfile.Create()", session.BankProfile.Create(groupNumber, customerId, bankProfile, document));
 
                 // Call BankProfile.Exists()
-                Helper.ShowResults("BankProfile.Exists()", session.BankProfile.Exists(groupNumber, clientId, bankProfile));
+                Helper.ShowResults("BankProfile.Exists()", session.BankProfile.Exists(groupNumber, customerId, bankProfile));
 
                 return bankProfile;
             }
@@ -45,13 +45,14 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Helper method to generate BankProfile object
         /// </summary>
-        private static Transport.BankProfile GetBankProfile(string accountNumber)
+        private static BankProfile GetBankProfile(string accountNumber)
         {
-            return Transport.BankProfile.Create(
+            return BankProfile.Create(
                 (int) BankAccountType.Checking, 
                 "BankProfile Test",
                 Helpers.BankRoutingNumber.BankOfAmerica, 
-                accountNumber
+                accountNumber,
+                false
                 );
         }
 

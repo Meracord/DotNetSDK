@@ -1,9 +1,9 @@
 ﻿using System;
+using Meracord.API;
 using Meracord.Sandbox.Factories;
 using Meracord.Sandbox.Helpers;
-using NoteWorld.DataServices;
-using NoteWorld.DataServices.Common.Factories;
-using NoteWorld.DataServices.Common.Transport;
+using Meracord.API.Common.Factories;
+using Meracord.API.Common.Transport;
 
 namespace Meracord.Sandbox.Example
 {
@@ -22,11 +22,12 @@ namespace Meracord.Sandbox.Example
             try
             {
                 var groupNumber = Settings.GroupNumber;
-                var newClientId = Helper.RandomAlphaNumericString(15);
+                var newCustomerId = Helper.RandomAlphaNumericString(15);
 
                 _session = SessionFactory.Create();
 
-                var transportAccount = GetTransportAccount(groupNumber, newClientId);
+
+                var transportAccount = GetTransportAccount(groupNumber, newCustomerId);
 
                 AccountCreate(transportAccount);
 
@@ -38,9 +39,9 @@ namespace Meracord.Sandbox.Example
 
                 AccountEditError(transportAccount);
 
-                AccountRead(groupNumber, newClientId);
+                AccountRead(groupNumber, newCustomerId);
 
-                return newClientId;
+                return newCustomerId;
             }
             catch (Exception ex)
             {
@@ -56,7 +57,7 @@ namespace Meracord.Sandbox.Example
         private static void AccountPlaceHold(Account transportAccount)
         {
             Helper.ShowResults("Account.PlaceHold()",
-                _session.Account.PlaceHold(transportAccount.GroupNumber, transportAccount.ClientId)
+                _session.Account.PlaceHold(transportAccount.GroupNumber, transportAccount.CustomerId)
                 );
         }
 
@@ -66,7 +67,7 @@ namespace Meracord.Sandbox.Example
         private static void AccountReleaseHold(Account transportAccount)
         {
             Helper.ShowResults("Account.ReleaseHold()",
-                               _session.Account.ReleaseHold(transportAccount.GroupNumber, transportAccount.ClientId)
+                               _session.Account.ReleaseHold(transportAccount.GroupNumber, transportAccount.CustomerId)
                 );
         }
 
@@ -98,8 +99,8 @@ namespace Meracord.Sandbox.Example
         /// </summary>
         private static void AccountEditError(Account transportAccount)
         {
-            // Modify the ClientId, make it Invalid
-            transportAccount.ClientId = transportAccount.ClientId.Substring(3);
+            // Modify the CustomerId, make it Invalid
+            transportAccount.CustomerId = transportAccount.CustomerId.Substring(3);
 
             Helper.ShowResults("Account.Edit() - cause exception",
                 _session.Account.Edit(transportAccount)
@@ -109,22 +110,34 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Account.Find() method
         /// </summary>
-        private static void AccountRead(string groupNumber, string newClientId)
+        private static void AccountRead(string groupNumber, string newCustomerId)
         {
             Helper.ShowResults("Account.Find()",
-                _session.Account.Find(groupNumber, newClientId)
+                _session.Account.Find(groupNumber, newCustomerId)
                 );
         }
 
         /// <summary>
         /// Create an Account object
         /// </summary>
-        public static Account GetTransportAccount(string groupNumber, string newClientId)
+        public static Account GetTransportAccount(string groupNumber, string newCustomerId)
         {
             return AccountFactory.Create(
-                groupNumber, newClientId, null, "999-99-1234", "Calvin", "Consumer", null, 
+                groupNumber, newCustomerId, null, "999-99-1234", "Calvin", "Consumer", null, 
                 "1001 Pacific Ave, Ste 300", "Tacoma", "WA", "98092", 
                 "calvinconsumer@Meracord.com", "999-999-9999"
+                );
+        }
+
+        /// <summary>
+        /// Create an Account object
+        /// </summary>
+        public static Account GetTransportBusinessAccount(string groupNumber, string newCustomerId)
+        {
+            return AccountFactory.CreateBusiness(
+                groupNumber, newCustomerId, "99-9999999", "My Business Name",
+                "1001 Pacific Ave, Ste 300", "Tacoma", "WA", "98092",
+                "accountservices@mybusiness.com", "999-999-9999"
                 );
         }
 
