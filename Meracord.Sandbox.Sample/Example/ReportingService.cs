@@ -119,7 +119,7 @@ namespace Meracord.Sandbox.Example
             IQueryable<AccountStatus> qryAccountStatus =
                 from p in _session.DataContext.AccountStatus
                 where p.GroupNumber == groupNumber
-                where p.CustomerID == customerId
+                where p.CustomerId == customerId
                 select p;
 
             return qryAccountStatus.ToArray();
@@ -150,7 +150,7 @@ namespace Meracord.Sandbox.Example
             IQueryable<DebitSummary> qryDebitSummary =
                 from p in _session.DataContext.DebitSummary
                 where p.GroupNumber == groupNumber
-                where p.CustomerID == customerId
+                where p.CustomerId == customerId
                 where p.DebitStatusId == debitStatus
                 select p;
 
@@ -181,7 +181,7 @@ namespace Meracord.Sandbox.Example
             var qryAccount =
                 from p in _session.DataContext.AccountDetails
                 where p.GroupNumber == groupNumber
-                where p.CustomerID == customerId
+                where p.CustomerId == customerId
                 select new { accountNumber = p.AccountNumber };
 
             return qryAccount.FirstOrDefault().accountNumber;
