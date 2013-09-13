@@ -45,6 +45,10 @@ namespace Meracord.Sandbox.Example
                     AccountTransactionHistory(groupNumber, customerId)
                     );
 
+                Helper.ShowResults("Transfers Query By Account",
+                    AccountTransfers(groupNumber, customerId)
+                    );
+
                 Helper.ShowResults("Custom Account Projection",
                     AccountProjection(groupNumber)
                     );
@@ -166,11 +170,28 @@ namespace Meracord.Sandbox.Example
 
             IQueryable<TransactionHistory> qryTransactionHistory =
                 from p in _session.DataContext.TransactionHistory
-                where p.SourceAccountNumber == accountNumber || p.TargetAccountNumber == accountNumber
+                where p.SourceAccountNumber == accountNumber || p.DestinationAccountNumber == accountNumber
                 orderby p.TransactionDate, p.TransactionId
                 select p;
 
             return qryTransactionHistory.ToArray();
+        }
+
+
+        /// <summary>
+        /// Query the DataContext.Transfers filtering by AccountNumber
+        /// </summary>
+        private static Transfers[] AccountTransfers(string groupNumber, string customerId)
+        {
+            var accountNumber = GetAccountNumberFor(groupNumber, customerId);
+
+            IQueryable<Transfers> qryTransfers =
+                from p in _session.DataContext.Transfers
+                where p.SourceAccountNumber == accountNumber || p.DestinationAccountNumber == accountNumber
+                orderby p.ExecutionDate
+                select p;
+
+            return qryTransfers.ToArray();
         }
 
         /// <summary>

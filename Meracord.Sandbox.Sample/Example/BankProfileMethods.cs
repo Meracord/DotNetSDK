@@ -15,44 +15,52 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static BankProfile Perform(string customerId)
+        public static Guid Perform(string customerId)
         {
             try
             {
-                var documentPath = Settings.DocumentPath;
                 var groupNumber = Settings.GroupNumber;
                 var bankProfile = GetBankProfile(Helper.RandomNumericString(17));
-                var document = DocumentFactory.Create(documentPath, DocumentType.AchAuthorization);
 
                 var session = SessionFactory.Create();
 
-                // Call BankProfile.Create()
-                Helper.ShowResults("BankProfile.Create()", session.BankProfile.Create(groupNumber, customerId, bankProfile, document));
+                //Call BankProfile.Create()
+                var bankProfileResult = session.BankProfile.Create(groupNumber, customerId, bankProfile);
 
-                // Call BankProfile.Exists()
-                Helper.ShowResults("BankProfile.Exists()", session.BankProfile.Exists(groupNumber, customerId, bankProfile));
+                Helper.ShowResults("BankProfile.Create()",
+                    bankProfileResult
+                    );
 
-                return bankProfile;
+                Helper.ShowResults("BankProfile.Find()", 
+                    session.BankProfile.Find(groupNumber, customerId)
+                    );
+
+                // Return the PaymentProfileToken generated in BankProfile.Create()
+                return bankProfileResult.PaymentProfileToken;
             }
             catch (Exception ex)
             {
                 Helper.DisplayException(ex);
             }
 
-            return null;
+            return Guid.Empty;
         }
 
         /// <summary>
         /// Helper method to generate BankProfile object
         /// </summary>
-        private static BankProfile GetBankProfile(string accountNumber)
+        public static BankProfile GetBankProfile(string accountNumber)
         {
+            var documentPath = Settings.DocumentPath;
+            var document = DocumentFactory.Create(documentPath, DocumentType.AchAuthorization);
+
             return BankProfile.Create(
                 (int) BankAccountType.Checking, 
                 "BankProfile Test",
                 Helpers.BankRoutingNumber.BankOfAmerica, 
                 accountNumber,
-                false
+                false,
+                document
                 );
         }
 

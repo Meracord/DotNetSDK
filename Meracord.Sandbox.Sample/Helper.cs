@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Meracord.Sandbox.Custom;
-using Meracord.API;
 using Meracord.API.Common.Enumeration;
 using Meracord.API.Common.Transport;
-using Meracord.API.Debit;
+using Meracord.Sandbox.Custom;
+using Meracord.API;
 using Meracord.API.Reporting;
 using AccountStatus = Meracord.API.Reporting.AccountStatus;
 using Transfer = Meracord.API.Transfer;
@@ -99,10 +98,10 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
+            Console.WriteLine("CustomerId    {0}", result.CustomerId);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
             foreach (var debit in result.Debits) {
-                Console.WriteLine("Debit:        {0}{1} {2}", debit.DebitId.ToString().PadRight(10), debit.DebitDate.ToString("yyyy-MM-dd"), debit.DebitAmount);
+                Console.WriteLine("Debit:        {0}{1} {2} {3}", debit.DebitId.ToString().PadRight(10), debit.DebitDate.ToString("yyyy-MM-dd"), debit.DebitAmount, debit.PaymentProfileToken);
             }
 
             if (result.Exceptions != null) {
@@ -267,7 +266,7 @@ namespace Meracord.Sandbox
                     "{0} {1} {2} {3} {4}",
                     trans.TransactionId.ToString().PadRight(8),
                     trans.SourceAccountNumber.PadRight(15),
-                    trans.TransactionTypeDescription.PadRight(25),
+                    trans.TransactionType.PadRight(25),
                     trans.AllocationType.PadRight(5),
                     trans.Amount.ToString("C")
                 );
@@ -281,9 +280,45 @@ namespace Meracord.Sandbox
             Console.WriteLine();
         }
 
+        public static void ShowResults(string title, Transfers[] transactions)
+        {
+            var count = 0;
+            ShowHeader(title, transactions.Count());
+            foreach (var trans in transactions)
+            {
+                Console.WriteLine(
+                    "{0} {1} {2} {3}",
+                    trans.SourceAccountNumber.PadRight(16),
+                    trans.DestinationAccountNumber.PadRight(16),
+                    trans.TransactionTypeId,
+                    trans.Amount.ToString("C")
+                );
+
+                count += 1;
+                if (count > 5)
+                {
+                    Console.WriteLine();
+                    return;
+                }
+            }
+            Console.WriteLine();
+        }
+
         public static void ShowResults(string title, ReportingSession session) {
             ShowHeader(title);
             Console.WriteLine(session.DataQuery);
+            Console.WriteLine();
+        }
+
+        public static void ShowResults(string title, BankProfileReference[] profileReferences)
+        {
+            ShowHeader(title, profileReferences.Count());
+            var i = 0;
+            foreach (var profile in profileReferences)
+            {
+                i++; if (i > 4) continue;
+                Console.WriteLine("{0} {1} {2} {3}", profile.PaymentProfileToken, profile.RoutingNumber, profile.AccountNumberMask, profile.AccountName);
+            }
             Console.WriteLine();
         }
 

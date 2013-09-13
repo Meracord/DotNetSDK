@@ -1,5 +1,4 @@
 ﻿using System;
-using Meracord.API.Common.Transport;
 using Meracord.Sandbox.Example;
 
 namespace Meracord.Sandbox
@@ -7,7 +6,7 @@ namespace Meracord.Sandbox
     internal class Program
     {
         private static string CustomerId { get; set; }
-        private static BankProfile BankProfile { get; set; }
+        private static Guid PaymentProfileToken { get; set; }
 
         static void Main(string[] args)
         {
@@ -15,9 +14,9 @@ namespace Meracord.Sandbox
             CustomerId = AccountMethods.Perform();
 
             // Save a reference to the BankProfile just created
-            BankProfile = BankProfileMethods.Perform(CustomerId);
+            PaymentProfileToken = BankProfileMethods.Perform(CustomerId);
 
-            DebitMethods.Perform(CustomerId, BankProfile);
+            DebitMethods.Perform(CustomerId, PaymentProfileToken);
             TransferMethods.Perform(CustomerId);
             PayeeMethods.Perform();
             ReportingService.Perform(CustomerId);
