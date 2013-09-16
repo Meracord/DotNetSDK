@@ -58,14 +58,14 @@ namespace Meracord.Sandbox.Example
             var tries = 4;
             while (tries > 0)
             {
-                var response = session.Payee.AddDocument(null, referenceId, document);
+                var response = session.Payee.AddDocument(groupNumber, referenceId, document);
                 if (response.Success)
                 {
                     return response;
                 }
                 var exception = response.Exceptions.FirstOrDefault();
 
-                if (exception.ExceptionType != DataServiceExceptionType.DocumentAccountNumberNotFound)
+                if (exception.ExceptionType != DataServiceExceptionType.AccountCustomerIdNotFound)
                 {
                     throw new ApplicationException(exception.Message);
                 }
