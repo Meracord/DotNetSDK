@@ -31,14 +31,15 @@ namespace Meracord.Sandbox.Example
                 var transportPayee = GetTransportPayee(groupNumber, referenceId);
 
                 var result = _session.Payee.Create(transportPayee);
-
                 Helper.ShowResults("Payee.Create()", result);
 
                 var documentPath = Settings.DocumentPath;
                 var document = DocumentFactory.Create(documentPath, DocumentType.PayeeAccountAuthorizationAgreement);
-
                 Helper.ShowResults("Payee.CreateDocument()", CreateDocument(_session, groupNumber, referenceId, document));
 
+                var transportPayeeContact = GetTransportPayeeContact(groupNumber, referenceId, transportPayee);
+                result = _session.Payee.EditContact(transportPayeeContact);
+                Helper.ShowResults("Payee.EditContact()", result);
             }
             catch (Exception ex)
             {
@@ -75,24 +76,37 @@ namespace Meracord.Sandbox.Example
                 tries--;
             }
 
-            throw new ApplicationException("Timeout reached waiting for PaymentCard profile to become active. It is possible the profile will never be activated do to processing constraints.");
+            throw new ApplicationException("Timeout reached waiting for Payee Account to be created.");
         }
 
 
-        /// Create an Payee object
-        /// </summary>
         public static PayeeAccount GetTransportPayee(string groupNumber, string referenceId)
         {
             var payeeAccount = PayeeAccountFactory.Create(groupNumber, referenceId, "999-99-1234", "Big Business Company", "1001 Pacific Ave, Ste 300", "Tacoma", "WA", "98092", "help@mybusiness.com", "253-355-2323");
-            payeeAccount.DisbursementMethod = (int) Meracord.API.Common.Enumeration.DisbursementMethod.Ach;
+            payeeAccount.DisbursementMethod = (int) DisbursementMethod.Ach;
             payeeAccount.BankAccount = new BankProfile
             {
                 AccountName = "My Business Name",
                 AccountNumber = "9999999999",
-                RoutingNumber = "262277066",
-                AccountType = (int) Meracord.API.Common.Enumeration.BankAccountType.Checking
+                RoutingNumber = BankRoutingNumber.BankOfAmerica,
+                AccountType = (int) BankAccountType.Checking
             };
             return payeeAccount;
+        }
+
+        public static PayeeContact GetTransportPayeeContact(string groupNumber, string referenceId, PayeeAccount payeeAccount)
+        {
+            var contact = new PayeeContact
+            {
+                GroupNumber = groupNumber,
+                CustomerId = referenceId,
+                Business = payeeAccount.Business,
+                MailingAddress = payeeAccount.MailingAddress,
+            };
+
+            contact.Business.Name = "My Company";
+
+            return contact;
         }
 
     }

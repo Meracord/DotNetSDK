@@ -7,6 +7,7 @@ using Meracord.Sandbox.Custom;
 using Meracord.API;
 using Meracord.API.Reporting;
 using AccountStatus = Meracord.API.Reporting.AccountStatus;
+using PaymentSummary = Meracord.API.Reporting.PaymentSummary;
 using Transfer = Meracord.API.Transfer;
 
 namespace Meracord.Sandbox
@@ -65,31 +66,33 @@ namespace Meracord.Sandbox
             Console.WriteLine(displayHeader);
         }
 
-        public static void ShowResults(string title, IList<API.Reporting.DebitSummary> debits)
-        {
+        public static void ShowResults(string title, PaymentCancelResult results) {
             ShowHeader(title);
-            foreach (var debit in debits)
-            {
-                var debitStatus = (DebitStatus)debit.DebitStatusId;
-                Console.WriteLine("Debit: {0}{1}{2}{3}", debit.DebitId.ToString().PadRight(10), debit.DebitDate.ToString("yyyy-MM-dd").PadRight(12), debit.DebitAmount.ToString("#,###.00").PadLeft(12), debitStatus.ToString().PadLeft(10));
-                Console.WriteLine("   Reserves:{0}{1}", "".PadRight(17), debit.ReserveAmount.ToString("#,###.00").PadLeft(12));
+            foreach (var result in results.Payments) {
+                Console.WriteLine("Payment: {0} Ref#: {1} Status: {2} Desc: {3}", result.PaymentToken,
+                    result.Payment.PaymentReferenceId, result.PaymentStatus.Id, result.PaymentStatus.Description);
+
+
             }
             Console.WriteLine();
         }
 
-        public static void ShowResults(string title, IList<API.Reporting.DebitDetails> debits)
-        {
+        public static void ShowResults(string title, PaymentScheduleResult result) {
             ShowHeader(title);
-            foreach (var debit in debits)
-            {
-                var debitStatus = (DebitStatus)debit.DebitStatusId;
-                Console.WriteLine("Debit: {0}{1}{2}{3}", debit.DebitId.ToString().PadRight(10), debit.DebitDate.ToString("yyyy-MM-dd").PadRight(12), debit.DebitAmount.ToString("#,###.00").PadLeft(12), debitStatus.ToString().PadLeft(10));
-                Console.WriteLine("   Reserves:{0}{1}", "".PadRight(17), debit.ReserveAmount.ToString("#,###.00").PadLeft(12));
-                foreach (var alloc in debit.Allocations)
-                {
-                    Console.WriteLine("   Allocation: {0}{1}{2}  {3}", alloc.Sequence.ToString().PadRight(4), alloc.AllocationCode.PadLeft(6), alloc.Amount.ToString("#,###.00").PadLeft(16), alloc.AllocationDescription);
+            Console.WriteLine("SessionId     {0}", result.SessionId);
+            Console.WriteLine("SessionDate   {0}", result.SessionDate);
+            Console.WriteLine("AccountNumber {0}", result.AccountNumber);
+            Console.WriteLine("CustomerId    {0}", result.CustomerId);
+            Console.WriteLine("IsSuccessful  {0}", result.Success);
+            Console.WriteLine("Payment:      {0}{1} {2}", result.Payment.PaymentDate.ToString("yyyy-MM-dd"), result.Payment.PaymentAmount, result.PaymentToken);
+
+            if (result.Exceptions != null) {
+                Console.WriteLine();
+                foreach (ExceptionMessage ex in result.Exceptions) {
+                    Console.WriteLine("    Exception: [{0}] - {1}, {2}", ((int)ex.ExceptionType), ex.ExceptionType, ex.Message);
                 }
             }
+
             Console.WriteLine();
         }
 
@@ -114,8 +117,7 @@ namespace Meracord.Sandbox
             Console.WriteLine();
         }
 
-        public static void ShowResults(string title, API.Account.AccountDetails result)
-        {
+        public static void ShowResults(string title, API.Account.AccountDetails result) {
             ShowHeader(title);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
             Console.WriteLine("DateSetup     {0}", result.DateSetup);
@@ -203,11 +205,9 @@ namespace Meracord.Sandbox
         }
 
 
-        public static void ShowResults(string title, API.Reporting.AccountDetails[] accounts)
-        {
+        public static void ShowResults(string title, API.Reporting.AccountDetails[] accounts) {
             ShowHeader(title, accounts.Count());
-            foreach (API.Reporting.AccountDetails account in accounts)
-            {
+            foreach (API.Reporting.AccountDetails account in accounts) {
                 Console.WriteLine("{0} {1} {2}", account.AccountNumber, account.CustomerId.PadRight(12), account.DateSetup.ToShortDateString());
                 Console.WriteLine();
                 return; //Only show one row
@@ -238,13 +238,30 @@ namespace Meracord.Sandbox
             }
         }
 
-        public static void ShowResults(string title, API.Debit.DebitSummary[] debits) {
-            ShowHeader(title, debits.Count());
-            foreach (API.Debit.DebitSummary debit in debits) {
-                Console.WriteLine("{0} {1} {2}", debit.AccountNumber, debit.CustomerId.PadRight(12), debit.ChangeDate.ToShortDateString());
+        public static void ShowResults(string title, PaymentSummary[] payments) {
+            ShowHeader(title, payments.Count());
+            foreach (PaymentSummary payment in payments)
+            {
+                Console.WriteLine("{0} {1} {2}", payment.AccountNumber, payment.CustomerId.PadRight(12), payment.ChangeDate.ToShortDateString());
                 Console.WriteLine();
                 return; //Only show one row
             }
+        }
+
+        public static void ShowResults(string title, PaymentScheduleDetails result) {
+            ShowHeader(title);
+            if (result != null)
+            {
+                if (result.Payment != null)
+                {
+                    Console.WriteLine("{0} {1} {2}", result.Payment.AccountNumber, result.Payment.CustomerId.PadRight(12), result.Payment.DateModified.ToShortDateString());
+                }
+                else
+                {
+                    Console.WriteLine("{0} {1}", result.PaymentToken, result.PaymentStatus);
+                }
+            }
+            Console.WriteLine();
         }
 
         public static void ShowResults(string title, MyAccount[] accounts) {
@@ -280,12 +297,10 @@ namespace Meracord.Sandbox
             Console.WriteLine();
         }
 
-        public static void ShowResults(string title, Transfers[] transactions)
-        {
+        public static void ShowResults(string title, Transfers[] transactions) {
             var count = 0;
             ShowHeader(title, transactions.Count());
-            foreach (var trans in transactions)
-            {
+            foreach (var trans in transactions) {
                 Console.WriteLine(
                     "{0} {1} {2} {3}",
                     trans.SourceAccountNumber.PadRight(16),
@@ -295,8 +310,7 @@ namespace Meracord.Sandbox
                 );
 
                 count += 1;
-                if (count > 5)
-                {
+                if (count > 5) {
                     Console.WriteLine();
                     return;
                 }
@@ -310,12 +324,10 @@ namespace Meracord.Sandbox
             Console.WriteLine();
         }
 
-        public static void ShowResults(string title, BankProfileReference[] profileReferences)
-        {
+        public static void ShowResults(string title, BankProfileReference[] profileReferences) {
             ShowHeader(title, profileReferences.Count());
             var i = 0;
-            foreach (var profile in profileReferences)
-            {
+            foreach (var profile in profileReferences) {
                 i++; if (i > 4) continue;
                 Console.WriteLine("{0} {1} {2} {3}", profile.PaymentProfileToken, profile.RoutingNumber, profile.AccountNumberMask, profile.AccountName);
             }

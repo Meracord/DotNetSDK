@@ -16,7 +16,7 @@ namespace Meracord.Sandbox
             // Save a reference to the BankProfile just created
             PaymentProfileToken = BankProfileMethods.Perform(CustomerId);
 
-            DebitMethods.Perform(CustomerId, PaymentProfileToken);
+            PaymentMethods.Perform(CustomerId, PaymentProfileToken);
             TransferMethods.Perform(CustomerId);
             PayeeMethods.Perform();
             ReportingService.Perform(CustomerId);

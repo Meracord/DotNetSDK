@@ -37,8 +37,8 @@ namespace Meracord.Sandbox.Example
                     FindAccountStatus(groupNumber, customerId)
                     );
 
-                Helper.ShowResults("DebitSummary Query",
-                    FindRecentProcessedDebits(groupNumber, customerId)
+                Helper.ShowResults("PaymentSummary Query",
+                    FindScheduledPayment(groupNumber, customerId)
                     );
 
                 Helper.ShowResults("Transaction History Query By Account",
@@ -145,20 +145,17 @@ namespace Meracord.Sandbox.Example
         }
 
         /// <summary>
-        /// Query the DataContext.DebitSummary filtering by ControlGroup and customerId
+        /// Query the DataContext.PaymentSummary filtering by ControlGroup and customerId
         /// </summary>
-        private static DebitSummary[] FindRecentProcessedDebits(string groupNumber, string customerId)
+        private static PaymentSummary[] FindScheduledPayment(string groupNumber, string customerId)
         {
-            const int debitStatus = (int)Meracord.API.Common.Enumeration.DebitStatus.PaymentProcessed;
-
-            IQueryable<DebitSummary> qryDebitSummary =
-                from p in _session.DataContext.DebitSummary
+            IQueryable<PaymentSummary> qryPaymentSummary =
+                from p in _session.DataContext.PaymentSummary
                 where p.GroupNumber == groupNumber
                 where p.CustomerId == customerId
-                where p.DebitStatusId == debitStatus
                 select p;
 
-            return qryDebitSummary.ToArray();
+            return qryPaymentSummary.ToArray();
         }
 
         /// <summary>
@@ -205,7 +202,9 @@ namespace Meracord.Sandbox.Example
                 where p.CustomerId == customerId
                 select new { accountNumber = p.AccountNumber };
 
-            return qryAccount.FirstOrDefault().accountNumber;
+            var account = qryAccount.FirstOrDefault();
+
+            return account == null ? string.Empty : account.accountNumber;
         }
     }
 }

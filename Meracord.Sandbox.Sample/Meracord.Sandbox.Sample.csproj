@@ -106,7 +106,7 @@
     <Compile Include="Example\AccountMethods.cs" />
     <Compile Include="Example\BankProfileMethods.cs" />
     <Compile Include="Example\PayeeMethods.cs" />
-    <Compile Include="Example\DebitMethods.cs" />
+    <Compile Include="Example\PaymentMethods.cs" />
     <Compile Include="Example\TransferMethods.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Helpers\CreditCard.cs" />

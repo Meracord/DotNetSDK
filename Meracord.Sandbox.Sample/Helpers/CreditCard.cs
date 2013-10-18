@@ -2,7 +2,7 @@
 {
     internal static class BankRoutingNumber
     {
-        public const string BankOfAmerica = "121000044";
+        public const string BankOfAmerica = "021300019";
         public const string WellsFargoBank = "041203824";
         public const string FirstAmericanBankAndTrust = "065403998";
         public const string UnionBankOfCalifornia = "026005050";
