@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Meracord.API</id>
+    <version>13144.97.3.17850</version>
+    <authors>Meracord, LLC</authors>
+    <owners>Meracord, LLC</owners>
+    <licenseUrl>http://www.meracord.com</licenseUrl>
+    <projectUrl>http://www.meracord.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Meracord Software Development Kit</description>
+  </metadata>
+</package>
