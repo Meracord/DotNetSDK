@@ -82,7 +82,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId    {0}", result.CustomerId);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
             Console.WriteLine("Payment:      {0}{1} {2}", result.Payment.PaymentDate.ToString("yyyy-MM-dd"), result.Payment.PaymentAmount, result.PaymentToken);
 
@@ -101,7 +100,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId    {0}", result.CustomerId);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
             foreach (var debit in result.Debits) {
                 Console.WriteLine("Debit:        {0}{1} {2} {3}", debit.DebitId.ToString().PadRight(10), debit.DebitDate.ToString("yyyy-MM-dd"), debit.DebitAmount, debit.PaymentProfileToken);
@@ -128,7 +126,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("HoldType      {0}", result.HoldType);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
 
@@ -144,7 +141,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("HoldType      {0}", result.HoldType);
             Console.WriteLine("AccountStatus {0}", result.AccountStatus);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
@@ -184,7 +180,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
 
             if (result.Exceptions != null)
@@ -254,11 +249,11 @@ namespace Meracord.Sandbox
             {
                 if (result.Payment != null)
                 {
-                    Console.WriteLine("{0} {1} {2}", result.Payment.AccountNumber, result.Payment.CustomerId.PadRight(12), result.Payment.DateModified.ToShortDateString());
+                    Console.WriteLine("{0} {1}", result.Payment.AccountNumber, result.Payment.DateModified.ToShortDateString());
                 }
                 else
                 {
-                    Console.WriteLine("{0} {1}", result.PaymentToken, result.PaymentStatus);
+                    Console.WriteLine("{0} {1}", result.PaymentToken, result.PaymentStatus.Description);
                 }
             }
             Console.WriteLine();
@@ -339,7 +334,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("IsSuccessful  {0}", result.Success);
             Console.WriteLine("DocumentUid   {0}", result.DocumentUid);
             Console.WriteLine();
@@ -356,7 +350,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("Source        {0}", result.SourceAccountNumber);
             Console.WriteLine("Destination   {0}", result.DestinationAccountNumber);
             Console.WriteLine("ExecutionDate {0}", result.ExecutionDate);
@@ -391,7 +384,6 @@ namespace Meracord.Sandbox
             Console.WriteLine("SessionId     {0}", result.SessionId);
             Console.WriteLine("SessionDate   {0}", result.SessionDate);
             Console.WriteLine("AccountNumber {0}", result.AccountNumber);
-            Console.WriteLine("CustomerId   {0}", result.CustomerId);
             Console.WriteLine("Method        {0}", result.RefundMethod);
             Console.WriteLine("Amount        {0}", result.Amount.ToString("#,##0.00"));
             Console.WriteLine("IsSuccessful  {0}", result.Success);
@@ -407,11 +399,11 @@ namespace Meracord.Sandbox
             }
         }
 
-        public static void ShowResults(string title, RefundDetail[] result, string groupNumber, string customerId) {
+        public static void ShowResults(string title, RefundDetail[] result, string accountNumber)
+        {
             ShowHeader(title);
 
-            Console.WriteLine("GroupNumber     {0}", groupNumber);
-            Console.WriteLine("CustomerID        {0}", customerId);
+            Console.WriteLine("AccountNumber   {0}", accountNumber);
             Console.WriteLine("Refunds Found   {0}\n\n", result.Length);
 
             foreach (RefundDetail detail in result) {

@@ -16,22 +16,15 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string customerId)
+        public static void Perform(string accountNumber)
         {
             try
             {
-                var groupNumber = Settings.GroupNumber;
-
                 _session = SessionFactory.Create();
-
-                var consumerAccountNumber = FindAccount(groupNumber, customerId);
 
                 var sourceAccountNumber = GetAdministrativeAccount();
 
-                // Identifying accounts for tranfers is different than most API calls.
-                // The source or destination account may be of a type that cannot be identified by a CustomerId.
-                // So we use the Meracord account number for transfers.
-                CreateTransfer(sourceAccountNumber, consumerAccountNumber);
+                CreateTransfer(sourceAccountNumber, accountNumber);
 
             }
             catch (Exception ex)
@@ -40,22 +33,6 @@ namespace Meracord.Sandbox.Example
             }
         }
 
-        /// <summary>
-        /// Execute Account.Find() method
-        /// </summary>
-        private static string FindAccount(string groupNumber, string customerId)
-        {
-            var result = _session.Account.Find(groupNumber, customerId);
-
-            Helper.ShowResults("Account.Find()", result);
-
-            if (result != null)
-            {
-                return result.AccountNumber;
-            }
-
-            return string.Empty;
-        }
 
         /// <summary>
         /// Execute Transfer.Create() method

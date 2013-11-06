@@ -17,7 +17,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string customerId, Guid paymentProfileToken)
+        public static void Perform(string accountNumber, Guid paymentProfileToken)
         {
             try
             {
@@ -26,13 +26,13 @@ namespace Meracord.Sandbox.Example
 
                 _session = SessionFactory.Create();
 
-                var paymentToken = SchedulePaymentWithToken(groupNumber, customerId, paymentProfileToken);
+                var paymentToken = SchedulePaymentWithToken(accountNumber, paymentProfileToken);
 
-                SchedulePaymentWithNewBankProfile(groupNumber, customerId, bankProfile);
+                SchedulePaymentWithNewBankProfile(accountNumber, bankProfile);
 
-                FindByToken(groupNumber, customerId, paymentToken);
+                FindByToken(accountNumber, paymentToken);
 
-                CancelAllPayment(groupNumber, customerId);
+                CancelAllPayment(accountNumber);
 
             }
             catch (Exception ex)
@@ -45,10 +45,10 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Payment.Schedule() method
         /// </summary>
-        private static void SchedulePaymentWithNewBankProfile(string groupNumber, string customerId, BankProfile bankProfile)
+        private static void SchedulePaymentWithNewBankProfile(string accountNumber, BankProfile bankProfile)
         {
             // Build payment transport object to send to web service
-            var payment = GetSchedulePaymentWithNewBankProfile(groupNumber, customerId, bankProfile);
+            var payment = GetSchedulePaymentWithNewBankProfile(accountNumber, bankProfile);
 
             // Call Payment WebService Schedule Method
             var paymentResult = _session.Payment.Schedule(payment);
@@ -58,10 +58,10 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Payment.Schedule() method
         /// </summary>
-        private static Guid SchedulePaymentWithToken(string groupNumber, string customerId, Guid token)
+        private static Guid SchedulePaymentWithToken(string accountNumber, Guid token)
         {
             // Build payment transport object to send to web service
-            var payment = GetSchedulePaymentWithToken(groupNumber, customerId, token);
+            var payment = GetSchedulePaymentWithToken(accountNumber, token);
 
             // Call Payment WebService Schedule Method
             var paymentResult = _session.Payment.Schedule(payment);
@@ -72,27 +72,27 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Payment.CancelAll() method
         /// </summary>
-        private static void CancelAllPayment(string groupNumber, string customerId)
+        private static void CancelAllPayment(string accountNumber)
         {
             // Call Payment WebService CancelAll Method
-            var paymentResult = _session.Payment.CancelAll(groupNumber, customerId);
+            var paymentResult = _session.Payment.CancelAll(accountNumber);
             Helper.ShowResults("Payment.CancelAll()", paymentResult);
         }
 
         /// <summary>
         /// Execute Payment.FindByTokens() method
         /// </summary>
-        private static void FindByToken(string groupNumber, string customerId, Guid token)
+        private static void FindByToken(string accountNumber, Guid token)
         {
             // Call Payment WebService CancelAll Method
-            var paymentResult = _session.Payment.FindByToken(groupNumber, customerId, token);
+            var paymentResult = _session.Payment.FindByToken(accountNumber, token);
             Helper.ShowResults("Payment.FindByToken()", paymentResult);
         }
 
         /// <summary>
         /// Helper method to generate PaymentInstruction object using BankProfile
         /// </summary>
-        private static PaymentInstruction GetSchedulePaymentWithNewBankProfile(string groupNumber, string customerId, BankProfile bankProfile)
+        private static PaymentInstruction GetSchedulePaymentWithNewBankProfile(string accountNumber, BankProfile bankProfile)
         {
             // Service Provider's Payment Identifier (Payment PrimaryKey)
             string paymentReferenceId = Guid.NewGuid().ToString(); 
@@ -122,14 +122,14 @@ namespace Meracord.Sandbox.Example
                 );
 
             // Call PaymentFactory Create Method, and return Transport.PaymentInstruction Instance
-            return PaymentFactory.Create(groupNumber, customerId, paymentReferenceId, paymentDate, bankProfile, paymentAmount, allocList);
+            return PaymentFactory.Create(accountNumber, paymentReferenceId, paymentDate, bankProfile, paymentAmount, allocList);
             
         }
 
         /// <summary>
         /// Helper method to generate PaymentInstruction object using PaymentProfileToken
         /// </summary>
-        private static PaymentInstruction GetSchedulePaymentWithToken(string groupNumber, string customerId, Guid token)
+        private static PaymentInstruction GetSchedulePaymentWithToken(string accountNumber, Guid token)
         {
             // Service Provider's Payment Identifier (Payment PrimaryKey)
             string paymentReferenceId = Guid.NewGuid().ToString();
@@ -159,7 +159,7 @@ namespace Meracord.Sandbox.Example
                 );
 
             // Call PaymentFactory Create Method, and return Transport.PaymentInstruction Instance
-            return PaymentFactory.Create(groupNumber, customerId, paymentReferenceId, paymentDate, token, paymentAmount, allocList);
+            return PaymentFactory.Create(accountNumber, paymentReferenceId, paymentDate, token, paymentAmount, allocList);
         }
 
     }

@@ -31,13 +31,14 @@ namespace Meracord.Sandbox.Example
                 var transportPayee = GetTransportPayee(groupNumber, referenceId);
 
                 var result = _session.Payee.Create(transportPayee);
+                var newAccountNumber = result.AccountNumber;
                 Helper.ShowResults("Payee.Create()", result);
 
                 var documentPath = Settings.DocumentPath;
                 var document = DocumentFactory.Create(documentPath, DocumentType.PayeeAccountAuthorizationAgreement);
-                Helper.ShowResults("Payee.CreateDocument()", CreateDocument(_session, groupNumber, referenceId, document));
+                Helper.ShowResults("Payee.CreateDocument()", CreateDocument(_session, newAccountNumber, document));
 
-                var transportPayeeContact = GetTransportPayeeContact(groupNumber, referenceId, transportPayee);
+                var transportPayeeContact = GetTransportPayeeContact(newAccountNumber, transportPayee);
                 result = _session.Payee.EditContact(transportPayeeContact);
                 Helper.ShowResults("Payee.EditContact()", result);
             }
@@ -49,7 +50,7 @@ namespace Meracord.Sandbox.Example
             return null;
         }
 
-        private static DocumentResult CreateDocument(DataSession session, string groupNumber, string referenceId, Document document)
+        private static DocumentResult CreateDocument(DataSession session, string accountNumber, Document document)
         {
             Console.WriteLine("Going to sleep for 5 seconds...");
             Console.WriteLine("The Payee.Create method performs an asynchronous operation with an ancillary system,\r\nso give the process a moment to complete before attempting to\r\nassociate an PayeeAccountAuthorizationAgreement");
@@ -59,7 +60,7 @@ namespace Meracord.Sandbox.Example
             var tries = 4;
             while (tries > 0)
             {
-                var response = session.Payee.AddDocument(groupNumber, referenceId, document);
+                var response = session.Payee.AddDocument(accountNumber, document);
                 if (response.Success)
                 {
                     return response;
@@ -94,12 +95,11 @@ namespace Meracord.Sandbox.Example
             return payeeAccount;
         }
 
-        public static PayeeContact GetTransportPayeeContact(string groupNumber, string referenceId, PayeeAccount payeeAccount)
+        public static PayeeContact GetTransportPayeeContact(string accountNumber, PayeeAccount payeeAccount)
         {
             var contact = new PayeeContact
             {
-                GroupNumber = groupNumber,
-                CustomerId = referenceId,
+                AccountNumber = accountNumber,
                 Business = payeeAccount.Business,
                 MailingAddress = payeeAccount.MailingAddress,
             };

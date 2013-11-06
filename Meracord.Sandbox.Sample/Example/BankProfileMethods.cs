@@ -15,7 +15,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static Guid Perform(string customerId)
+        public static Guid Perform(string accountNumber)
         {
             try
             {
@@ -25,14 +25,14 @@ namespace Meracord.Sandbox.Example
                 var session = SessionFactory.Create();
 
                 //Call BankProfile.Create()
-                var bankProfileResult = session.BankProfile.Create(groupNumber, customerId, bankProfile);
+                var bankProfileResult = session.BankProfile.Create(accountNumber, bankProfile);
 
                 Helper.ShowResults("BankProfile.Create()",
                     bankProfileResult
                     );
 
-                Helper.ShowResults("BankProfile.Find()", 
-                    session.BankProfile.Find(groupNumber, customerId)
+                Helper.ShowResults("BankProfile.Find()",
+                    session.BankProfile.Find(accountNumber)
                     );
 
                 // Return the PaymentProfileToken generated in BankProfile.Create()

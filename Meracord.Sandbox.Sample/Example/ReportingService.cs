@@ -17,7 +17,7 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute sample method calls
         /// </summary>
-        public static void Perform(string customerId)
+        public static void Perform(string accountNumber)
         {
             try
             {
@@ -34,19 +34,19 @@ namespace Meracord.Sandbox.Example
                     );
 
                 Helper.ShowResults("AccountStatus Query",
-                    FindAccountStatus(groupNumber, customerId)
+                    FindAccountStatus(accountNumber)
                     );
 
                 Helper.ShowResults("PaymentSummary Query",
-                    FindScheduledPayment(groupNumber, customerId)
+                    FindScheduledPayment(accountNumber)
                     );
 
                 Helper.ShowResults("Transaction History Query By Account",
-                    AccountTransactionHistory(groupNumber, customerId)
+                    AccountTransactionHistory(accountNumber)
                     );
 
                 Helper.ShowResults("Transfers Query By Account",
-                    AccountTransfers(groupNumber, customerId)
+                    AccountTransfers(accountNumber)
                     );
 
                 Helper.ShowResults("Custom Account Projection",
@@ -118,12 +118,11 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Query the DataContext.AccountStatus filtering by ControlGroup and customerId
         /// </summary>
-        private static AccountStatus[] FindAccountStatus(string groupNumber, string customerId)
+        private static AccountStatus[] FindAccountStatus(string accountNumber)
         {
             IQueryable<AccountStatus> qryAccountStatus =
                 from p in _session.DataContext.AccountStatus
-                where p.GroupNumber == groupNumber
-                where p.CustomerId == customerId
+                where p.AccountNumber == accountNumber
                 select p;
 
             return qryAccountStatus.ToArray();
@@ -147,12 +146,11 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Query the DataContext.PaymentSummary filtering by ControlGroup and customerId
         /// </summary>
-        private static PaymentSummary[] FindScheduledPayment(string groupNumber, string customerId)
+        private static PaymentSummary[] FindScheduledPayment(string accountNumber)
         {
             IQueryable<PaymentSummary> qryPaymentSummary =
                 from p in _session.DataContext.PaymentSummary
-                where p.GroupNumber == groupNumber
-                where p.CustomerId == customerId
+                where p.AccountNumber == accountNumber
                 select p;
 
             return qryPaymentSummary.ToArray();
@@ -161,10 +159,8 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Query the DataContext.TransactionHistory filtering by AccountNumber
         /// </summary>
-        private static TransactionHistory[] AccountTransactionHistory(string groupNumber, string customerId)
+        private static TransactionHistory[] AccountTransactionHistory(string accountNumber)
         {
-            var accountNumber = GetAccountNumberFor(groupNumber, customerId);
-
             IQueryable<TransactionHistory> qryTransactionHistory =
                 from p in _session.DataContext.TransactionHistory
                 where p.SourceAccountNumber == accountNumber || p.DestinationAccountNumber == accountNumber
@@ -178,10 +174,8 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Query the DataContext.Transfers filtering by AccountNumber
         /// </summary>
-        private static Transfers[] AccountTransfers(string groupNumber, string customerId)
+        private static Transfers[] AccountTransfers(string accountNumber)
         {
-            var accountNumber = GetAccountNumberFor(groupNumber, customerId);
-
             IQueryable<Transfers> qryTransfers =
                 from p in _session.DataContext.Transfers
                 where p.SourceAccountNumber == accountNumber || p.DestinationAccountNumber == accountNumber
@@ -190,21 +184,6 @@ namespace Meracord.Sandbox.Example
 
             return qryTransfers.ToArray();
         }
-
-        /// <summary>
-        /// Query the DataContext.AccountDetails to get the AccountNumber for groupNumber/customerId
-        /// </summary>
-        private static string GetAccountNumberFor(string groupNumber, string customerId)
-        {
-            var qryAccount =
-                from p in _session.DataContext.AccountDetails
-                where p.GroupNumber == groupNumber
-                where p.CustomerId == customerId
-                select new { accountNumber = p.AccountNumber };
-
-            var account = qryAccount.FirstOrDefault();
-
-            return account == null ? string.Empty : account.accountNumber;
-        }
+        
     }
 }

@@ -29,19 +29,19 @@ namespace Meracord.Sandbox.Example
 
                 var transportAccount = GetTransportAccount(groupNumber, newCustomerId);
 
-                AccountCreate(transportAccount);
+                var newAccountNumber = AccountCreate(transportAccount);
 
-                AccountPlaceHold(transportAccount);
+                AccountPlaceHold(newAccountNumber);
 
-                AccountReleaseHold(transportAccount);
+                AccountReleaseHold(newAccountNumber);
 
-                AccountEdit(transportAccount);
+                AccountEdit(transportAccount, newAccountNumber);
 
                 AccountEditError(transportAccount);
 
-                AccountRead(groupNumber, newCustomerId);
+                AccountFindByCustomerId(groupNumber, newCustomerId);
 
-                return newCustomerId;
+                return newAccountNumber;
             }
             catch (Exception ex)
             {
@@ -54,43 +54,52 @@ namespace Meracord.Sandbox.Example
         /// <summary>
         /// Execute Account.PlaceHold() method
         /// </summary>
-        private static void AccountPlaceHold(Account transportAccount)
+        private static void AccountPlaceHold(string accountNumber)
         {
             Helper.ShowResults("Account.PlaceHold()",
-                _session.Account.PlaceHold(transportAccount.GroupNumber, transportAccount.CustomerId)
+                _session.Account.PlaceHold(accountNumber)
                 );
         }
 
         /// <summary>
         /// Execute Account.ReleaseHold() method
         /// </summary>
-        private static void AccountReleaseHold(Account transportAccount)
+        private static void AccountReleaseHold(string accountNumber)
         {
             Helper.ShowResults("Account.ReleaseHold()",
-                               _session.Account.ReleaseHold(transportAccount.GroupNumber, transportAccount.CustomerId)
+                               _session.Account.ReleaseHold(accountNumber)
                 );
         }
 
         /// <summary>
         /// Execute Account.Create() method
         /// </summary>
-        private static void AccountCreate(Account transportAccount)
+        private static string AccountCreate(Account transportAccount)
         {
-            Helper.ShowResults("Account.Create()",
-                _session.Account.Create(transportAccount)
-                );
+            var response = _session.Account.Create(transportAccount);
+
+            Helper.ShowResults("Account.Create()", response);
+
+            return response.AccountNumber;
         }
 
         /// <summary>
         /// Execute Account.Edit() method
         /// </summary>
-        private static void AccountEdit(Account transportAccount)
+        private static void AccountEdit(Account transportAccount, string accountNumber)
         {
+            var accountEdit = new AccountEdit
+            {
+                AccountNumber = accountNumber,
+                Business = transportAccount.Business,
+                Individual = transportAccount.Individual
+            };
+
             //Modify the First name
             transportAccount.Individual.NameFirst = transportAccount.Individual.NameFirst + ".";
 
             Helper.ShowResults("Account.Edit()",
-                _session.Account.Edit(transportAccount)
+                _session.Account.Edit(accountEdit)
                 );
         }
 
@@ -99,21 +108,26 @@ namespace Meracord.Sandbox.Example
         /// </summary>
         private static void AccountEditError(Account transportAccount)
         {
-            // Modify the CustomerId, make it Invalid
-            transportAccount.CustomerId = transportAccount.CustomerId.Substring(3);
+            var accountEdit = new AccountEdit
+            {
+                AccountNumber = "xxxxxxxxxxxx",
+                Business = transportAccount.Business,
+                Individual = transportAccount.Individual
+            };
+
 
             Helper.ShowResults("Account.Edit() - cause exception",
-                _session.Account.Edit(transportAccount)
+                _session.Account.Edit(accountEdit)
                 );
         }
 
         /// <summary>
-        /// Execute Account.Find() method
+        /// Execute Account.FindByCustomerId() method
         /// </summary>
-        private static void AccountRead(string groupNumber, string newCustomerId)
+        private static void AccountFindByCustomerId(string groupNumber, string newCustomerId)
         {
-            Helper.ShowResults("Account.Find()",
-                _session.Account.Find(groupNumber, newCustomerId)
+            Helper.ShowResults("Account.FindByCustomerId()",
+                _session.Account.FindByCustomerId(groupNumber, newCustomerId)
                 );
         }
 
